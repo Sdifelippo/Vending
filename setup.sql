@@ -1,11 +1,11 @@
 DROP DATABASE IF EXISTS machinedb;
 CREATE DATABASE machinedb;
 
-\c machinedb
+\c machinesdb
 
-CREATE TABLE machine(
-  machine_id SERIAL PRIMARY KEY,
-  name TEXT,
+CREATE TABLE machines(
+  machines_id SERIAL PRIMARY KEY,
+  location TEXT,
   bank INTEGER
 );
 
@@ -15,7 +15,7 @@ CREATE TABLE item(
   description TEXT,
   cost FLOAT,
   quantity INTEGER,
-  machine_id INTEGER REFERENCES machine
+  machines_id INTEGER REFERENCES machines
 );
 
 CREATE TABLE purchase(
@@ -23,34 +23,35 @@ CREATE TABLE purchase(
   purchase_time TIMESTAMPTZ,
   amount_taken FLOAT,
   change_given FLOAT,
-  machine_id INTEGER REFERENCES machine,
+  machines_id INTEGER REFERENCES machines,
   item_id INTEGER REFERENCES item
 );
 
-INSERT INTO machine(name, bank)
-VALUES('Candy', 500),
-('Snacks', 500),
-('Beers', 500);
+INSERT INTO machines(bank, location)
+VALUES(350.00, 'Entrance'),
+(250.75, 'Break Area'),
+(210.25, 'Beer Thirty');
 
-INSERT INTO item(description, cost, quantity, machine_id)
-VALUES ('Skittles', 2.00, 10, (SELECT machine_id FROM machine WHERE name='Candy')),
-('Peanuts', 2.00, 20, (SELECT machine_id FROM machine WHERE name='Candy')),
-('Sour Patch', 1.00, 40, (SELECT machine_id FROM machine WHERE name='Candy')),
-('Snickers', 1.00, 10, (SELECT machine_id FROM machine WHERE name='Candy')),
-('Doritos', 4.00, 10, (SELECT machine_id FROM machine WHERE name='Snacks')),
-('Chips', 4.00, 10, (SELECT machine_id FROM machine WHERE name='Snacks')),
-('Cookies', 2.50, 30, (SELECT machine_id FROM machine WHERE name='Snacks')),
-('Funyons', 4.00, 20, (SELECT machine_id FROM machine WHERE name='Snacks')),
-('Purple Haze', 3.00, 40, (SELECT machine_id FROM machine WHERE name='Beers')),
-('Blue Moon', 4.00, 20, (SELECT machine_id FROM machine WHERE name='Beers')),
-('Corona', 4.00, 40, (SELECT machine_id FROM machine WHERE name='Beers')),
-('Buds', 2.00, 4, (SELECT machine_id FROM machine WHERE name='Beers'));
+INSERT INTO item(cost, location, amount, machine_id)
+VALUES ('Skittles', 1.75, 10, (SELECT machines_id FROM machines WHERE location='Entrance')),
+('Peanuts', 2.00, 20, (SELECT machines_id FROM machines WHERE location='Entrance')),
+('Sour Patch', 1.00, 40, (SELECT machines_id FROM machines WHERE location='Entrance')),
+('Snickers', 1.00, 10, (SELECT machines_id FROM machines WHERE location='Entrance')),
+('Doritos', 1.50, 10, (SELECT machines_id FROM machines WHERE location='Break Area')),
+('Jerky', 2.00, 10, (SELECT machines_id FROM machines WHERE location='Break Area')),
+('Oreos', 1.75, 30, (SELECT machines_id FROM machines WHERE location='Break Area')),
+('Funyons', 1.50.00, 20, (SELECT machines_id FROM machines WHERE location='Break Area')),
+('Purple Haze', 3.50, 40, (SELECT machines_id FROM machines WHERE location='Beer Thirty')),
+('Blue Moon', 4.00, 20, (SELECT machines_id FROM machines WHERE location='Beer Thirty')),
+('Corona', 4.00, 40, (SELECT machines_id FROM machines WHERE location='Beer Thirty')),
+('Buds', 8.50, 4, (SELECT machines_id FROM machines WHERE location='Beer Thirty'));
 
-INSERT INTO purchase(purchase_time, amount_taken, machine_id, item_id)
+INSERT INTO purchase(purchase_time, amount_taken, machines_id, item_id)
 VALUES
-('now', 20.00,(SELECT machine_id FROM machine WHERE name = 'Beers'), (SELECT item_id FROM item WHERE description ='Purple Haze'));
+('now', 20.00,(SELECT machines_id FROM machines WHERE location = 'Beer Thirty'), (SELECT item_id FROM item WHERE description ='Purple Haze'), 3.50, 5.00),
+('now', 20.00,(SELECT machines_id FROM machines WHERE location = 'Break Area '), (SELECT item_id FROM item WHERE description ='Corona'), 1.00, 0),
+('now', 20.00,(SELECT machines_id FROM machines WHERE location = 'Entrance '), (SELECT item_id FROM item WHERE description ='Oreos'), 1.75, 3.00),
 
-
-select * from machine;
+select * from machines;
 select * from item;
 select * from purchase;
